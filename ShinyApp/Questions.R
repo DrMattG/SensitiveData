@@ -1,4 +1,5 @@
 library(shiny)
+library(readxl)
 library(tidyverse)
 library(here)
 #clear out previous iterations of results
@@ -51,15 +52,15 @@ ui <- fluidPage(
                conditionalPanel(condition = "input.Q10=='No'",
                                 radioButtons(inputId="Q14", label="Is the taxon subject to low to medium threat if precise locations (i.e. locations with a precision greater than 0.001 degrees or 100m) become publicly available and where there is some risk of collection or deliberate damage?", 
                                              choices=c("Yes","No"))),
-               conditionalPanel(condition = "input.Q11=='No'",
-                                radioButtons(inputId="Q12", label="Is the taxon such that the provision of precise locations at finer than 0.1 degrees (~10 km) would subject the taxon to threats such as disturbance and exploitation? Or does the record include highly sensitive information, the release of which could cause extreme harm to an individual or the environment?", 
-                                             choices=c("Yes","No"))),
-               conditionalPanel(condition = "input.Q12=='No'",
-               radioButtons(inputId="Q13", label=" Is the taxon such that the provision of precise locations at finer than 0.01 degrees (~1 km) would subject the species to threats such as collection or deliberate damage? Or does the record include sensitive information, the release of which could cause harm to an individual or the environment?", 
-                            choices=c("Yes","No"))),
-               conditionalPanel(condition = "input.Q13=='No'",
-               radioButtons(inputId="Q14", label="Is the taxon subject to low to medium threat if precise locations (i.e. locations with a precision greater than 0.001 degrees or 100m) become publicly available and where there is some risk of collection or deliberate damage?", 
-                            choices=c("Yes","No"))),
+               # conditionalPanel(condition = "input.Q11=='No'",
+               #                  radioButtons(inputId="Q12", label="Is the taxon such that the provision of precise locations at finer than 0.1 degrees (~10 km) would subject the taxon to threats such as disturbance and exploitation? Or does the record include highly sensitive information, the release of which could cause extreme harm to an individual or the environment?", 
+               #                               choices=c("Yes","No"))),
+               # conditionalPanel(condition = "input.Q12=='No'",
+               # radioButtons(inputId="Q13", label=" Is the taxon such that the provision of precise locations at finer than 0.01 degrees (~1 km) would subject the species to threats such as collection or deliberate damage? Or does the record include sensitive information, the release of which could cause harm to an individual or the environment?", 
+               #              choices=c("Yes","No"))),
+               # conditionalPanel(condition = "input.Q13=='No'",
+               # radioButtons(inputId="Q14", label="Is the taxon subject to low to medium threat if precise locations (i.e. locations with a precision greater than 0.001 degrees or 100m) become publicly available and where there is some risk of collection or deliberate damage?", 
+               #              choices=c("Yes","No"))),
                htmlOutput(outputId = "D_o_R",container = div,
                           inline = FALSE),
                actionButton("do4", "All finished? click here")
