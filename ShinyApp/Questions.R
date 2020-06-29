@@ -49,18 +49,15 @@ ui <- fluidPage(
                conditionalPanel(condition = "input.Q10=='Yes'",
                                 radioButtons(inputId="Q11", label="Is the taxon distinctive and of high biological significance, under high threat from exploitation/ disease or other identifiable threat where even general locality information may threaten the taxon? Or could the release of any part of the record cause irreparable harm to the environment or to an individual?", 
                             choices=c("Yes","No"))),
-               conditionalPanel(condition = "input.Q10=='No'",
-                                radioButtons(inputId="Q14", label="Is the taxon subject to low to medium threat if precise locations (i.e. locations with a precision greater than 0.001 degrees or 100m) become publicly available and where there is some risk of collection or deliberate damage?", 
-                                             choices=c("Yes","No"))),
-               # conditionalPanel(condition = "input.Q11=='No'",
-               #                  radioButtons(inputId="Q12", label="Is the taxon such that the provision of precise locations at finer than 0.1 degrees (~10 km) would subject the taxon to threats such as disturbance and exploitation? Or does the record include highly sensitive information, the release of which could cause extreme harm to an individual or the environment?", 
-               #                               choices=c("Yes","No"))),
-               # conditionalPanel(condition = "input.Q12=='No'",
-               # radioButtons(inputId="Q13", label=" Is the taxon such that the provision of precise locations at finer than 0.01 degrees (~1 km) would subject the species to threats such as collection or deliberate damage? Or does the record include sensitive information, the release of which could cause harm to an individual or the environment?", 
-               #              choices=c("Yes","No"))),
-               # conditionalPanel(condition = "input.Q13=='No'",
-               # radioButtons(inputId="Q14", label="Is the taxon subject to low to medium threat if precise locations (i.e. locations with a precision greater than 0.001 degrees or 100m) become publicly available and where there is some risk of collection or deliberate damage?", 
-               #              choices=c("Yes","No"))),
+               conditionalPanel(condition = "input.Q11=='No'",
+                                 radioButtons(inputId="Q12", label="Is the taxon such that the provision of precise locations at finer than 0.1 degrees (~10 km) would subject the taxon to threats such as disturbance and exploitation? Or does the record include highly sensitive information, the release of which could cause extreme harm to an individual or the environment?", 
+                                              choices=c("Yes","No"))),
+                conditionalPanel(condition = "input.Q12=='No'",
+                radioButtons(inputId="Q13", label=" Is the taxon such that the provision of precise locations at finer than 0.01 degrees (~1 km) would subject the species to threats such as collection or deliberate damage? Or does the record include sensitive information, the release of which could cause harm to an individual or the environment?", 
+                             choices=c("Yes","No"))),
+                conditionalPanel(condition = "input.Q10=='No' || input.Q13=='No'",
+                radioButtons(inputId="Q14", label="Is the taxon subject to low to medium threat if precise locations (i.e. locations with a precision greater than 0.001 degrees or 100m) become publicly available and where there is some risk of collection or deliberate damage?", 
+                             choices=c("Yes","No"))),
                htmlOutput(outputId = "D_o_R",container = div,
                           inline = FALSE),
                actionButton("do4", "All finished? click here")
@@ -182,7 +179,7 @@ server <- function(input, output) {
       out<-GBIF_cat[9,4]
       out<-rename(out, nm= 1)
     }else{
-      if(input$Q6=="Yes" & input$Q9=="No"){
+      if(input$Q6=="Yes" && input$Q9=="No"){
         out<-GBIF_cat[9,5]
         out<-rename(out, nm= 1)
       }else{
@@ -202,7 +199,7 @@ server <- function(input, output) {
       as.data.frame(out)
     })
   DataQ11<-reactive({
-    if(input$Q11=="Yes"){
+    if(input$Q10=="Yes" && input$Q11=="Yes"){
       out<-GBIF_cat[11,4]
       out<-rename(out, nm= 1)
     }else{
@@ -211,7 +208,7 @@ server <- function(input, output) {
   })
   
   DataQ12<-reactive({
-    if(input$Q12=="Yes"){
+    if(input$Q10=="Yes" && input$Q11=="No" && input$Q12=="Yes"){
       out<-GBIF_cat[12,4]
       out<-rename(out, nm= 1)
     }else{
@@ -220,7 +217,7 @@ server <- function(input, output) {
   })
   
   DataQ13<-reactive({
-    if(input$Q13=="Yes"){
+    if(input$Q10=="Yes" && input$Q11=="No" && input$Q12=="No" && input$Q13=="Yes"){
       out<-GBIF_cat[13,4]
       out<-rename(out, nm= 1)
     }else{
