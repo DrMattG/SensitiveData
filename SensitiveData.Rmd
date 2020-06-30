@@ -1,0 +1,175 @@
+---
+title: "Sensitive"
+author: "Matt"
+date: "29 6 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(LivingNorwayData)
+library(dplyr)
+```
+
+```{r get some data}
+data=LivingNorwayData::Rock_ptarmigan %>% 
+  mutate(X.koordinat=gsub(",",".", X.koordinat)) %>% 
+  mutate(Y.koordinat=gsub(",",".", Y.koordinat)) %>% 
+  mutate(X.koordinat=as.numeric(X.koordinat)) %>% 
+  mutate(Y.koordinat=as.numeric(Y.koordinat))
+
+```
+
+```{r}
+
+Sensitive_locations<-function(data, XField, YField,
+                         
+                         Cat="NS"){
+  
+  library(tidyverse)
+  
+  library(encryptr)
+ 
+  out<-data
+  
+  
+### Switch: Cats CHECK THE ROUNDING
+  
+  switch(Cat,
+         
+         "2"={
+            XField<-enquo(XField)
+            YField<-enquo(YField)
+           out<-data %>% 
+             dplyr::mutate(!!XField := round(as.numeric(!!XField),-5)) %>% 
+             dplyr::mutate(!!YField := round(as.numeric(!!YField),-5))
+         },
+         
+         "3"={
+            XField<-enquo(XField)
+            YField<-enquo(YField)
+            out<-data %>% 
+             dplyr::mutate(!!XField := round(!!XField,-3)) %>% 
+             dplyr::mutate(!!YField := round(!!YField,-3))
+         },
+         "4"={
+            XField<-enquo(XField)
+            YField<-enquo(YField)
+            out<-data %>% 
+             dplyr::mutate(!!XField := round(!!XField,-1)) %>% 
+             dplyr::mutate(!!YField :=round(!!YField,-1))
+         },
+         "1"={### Highest category - encrypt the data
+            XField<-enquo(XField)
+            YField<-enquo(YField)
+           encryptr::genkeys()
+           # Keys == Ptarmigan
+           encrypted = data %>% 
+             encryptr::encrypt(!!XField, !!YField)
+           
+           out<-encrypted},
+         
+  )
+  
+  return(out)
+}
+
+
+
+```
+
+```{r}
+dat_cat1<-Sensitive_locations(data=data, XField = X.koordinat, YField=Y.koordinat, Cat="1")
+
+dat_cat1
+
+
+```
+
+
+```{r}
+
+dat_cat2<-Sensitive_locations(data=data,XField= X.koordinat, YField=Y.koordinat, Cat="2")
+dat_cat2
+
+```
+
+
+```{r}
+dat_cat3<-Sensitive_locations(data=data, XField = X.koordinat, YField=Y.koordinat, Cat="3")
+dat_cat3
+```
+
+```{r}
+
+dat_cat4<-Sensitive_locations(data=data, XField = X.koordinat, YField=Y.koordinat, Cat="4")
+dat_cat4
+
+```
+
+```{r}
+
+dat_catNS<-Sensitive_locations(data=data, XField = X.koordinat, YField=Y.koordinat)
+dat_catNS
+```
+
+
+
+```{r}
+
+library(leaflet)
+Original<-LivingNorwayR::get_NOR_geographic_extent(data,"X.koordinat", "Y.koordinat",Code = 3045)
+Cat_4<-LivingNorwayR::get_NOR_geographic_extent(dat_cat4,"X.koordinat", "Y.koordinat",Code = 3045)
+Cat_3<-LivingNorwayR::get_NOR_geographic_extent(dat_cat3,"X.koordinat", "Y.koordinat",Code = 3045)
+Cat_2<-LivingNorwayR::get_NOR_geographic_extent(dat_cat2,"X.koordinat", "Y.koordinat",Code = 3045)
+#Cat_1<-LivingNorwayR::get_NOR_geographic_extent(dat_cat1,"X.koordinat", "Y.koordinat",Code = 3045)
+Cat_NS<-LivingNorwayR::get_NOR_geographic_extent(dat_catNS,"X.koordinat", "Y.koordinat",Code = 3045)
+
+```
+
+
+```{r}
+Original
+
+```
+
+
+```{r}
+Cat_NS
+```
+
+
+```{r}
+Cat_4
+```
+
+```{r}
+Cat_3
+```
+
+
+
+```{r}
+Cat_2
+```
+
+
+```{r}
+Full_decrypt<-function(data=data,target_cols=c(x, y)){
+  library(encryptr)
+  library(dplyr)
+  decrypted = data %>% 
+    encryptr::decrypt(data$x, data$y)
+  
+  return(decrypted)
+  
+}
+
+
+```
+
+```{r}
+Full_decrypt(data =dat_cat1, target_cols=c(X.koordinat, Y.koordinat))
+
+```
+
